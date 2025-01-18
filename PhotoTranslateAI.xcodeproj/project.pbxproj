@@ -1,0 +1,559 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		3E0303CC2D3C566400639DF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3E0303B32D3C566300639DF3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E0303BA2D3C566300639DF3;
+			remoteInfo = PhotoTranslateAI;
+		};
+		3E0303D62D3C566400639DF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3E0303B32D3C566300639DF3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3E0303BA2D3C566300639DF3;
+			remoteInfo = PhotoTranslateAI;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3E0303BB2D3C566300639DF3 /* PhotoTranslateAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoTranslateAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E0303CB2D3C566400639DF3 /* PhotoTranslateAITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoTranslateAITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E0303D52D3C566400639DF3 /* PhotoTranslateAIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoTranslateAIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		3E0303BD2D3C566300639DF3 /* PhotoTranslateAI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PhotoTranslateAI;
+			sourceTree = "<group>";
+		};
+		3E0303CE2D3C566400639DF3 /* PhotoTranslateAITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PhotoTranslateAITests;
+			sourceTree = "<group>";
+		};
+		3E0303D82D3C566400639DF3 /* PhotoTranslateAIUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = PhotoTranslateAIUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		3E0303B82D3C566300639DF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303C82D3C566400639DF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303D22D3C566400639DF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		3E0303B22D3C566300639DF3 = {
+			isa = PBXGroup;
+			children = (
+				3E0303BD2D3C566300639DF3 /* PhotoTranslateAI */,
+				3E0303CE2D3C566400639DF3 /* PhotoTranslateAITests */,
+				3E0303D82D3C566400639DF3 /* PhotoTranslateAIUITests */,
+				3E0303BC2D3C566300639DF3 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		3E0303BC2D3C566300639DF3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				3E0303BB2D3C566300639DF3 /* PhotoTranslateAI.app */,
+				3E0303CB2D3C566400639DF3 /* PhotoTranslateAITests.xctest */,
+				3E0303D52D3C566400639DF3 /* PhotoTranslateAIUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3E0303BA2D3C566300639DF3 /* PhotoTranslateAI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0303DF2D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAI" */;
+			buildPhases = (
+				3E0303B72D3C566300639DF3 /* Sources */,
+				3E0303B82D3C566300639DF3 /* Frameworks */,
+				3E0303B92D3C566300639DF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				3E0303BD2D3C566300639DF3 /* PhotoTranslateAI */,
+			);
+			name = PhotoTranslateAI;
+			packageProductDependencies = (
+			);
+			productName = PhotoTranslateAI;
+			productReference = 3E0303BB2D3C566300639DF3 /* PhotoTranslateAI.app */;
+			productType = "com.apple.product-type.application";
+		};
+		3E0303CA2D3C566400639DF3 /* PhotoTranslateAITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0303E22D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAITests" */;
+			buildPhases = (
+				3E0303C72D3C566400639DF3 /* Sources */,
+				3E0303C82D3C566400639DF3 /* Frameworks */,
+				3E0303C92D3C566400639DF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E0303CD2D3C566400639DF3 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3E0303CE2D3C566400639DF3 /* PhotoTranslateAITests */,
+			);
+			name = PhotoTranslateAITests;
+			packageProductDependencies = (
+			);
+			productName = PhotoTranslateAITests;
+			productReference = 3E0303CB2D3C566400639DF3 /* PhotoTranslateAITests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		3E0303D42D3C566400639DF3 /* PhotoTranslateAIUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3E0303E52D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAIUITests" */;
+			buildPhases = (
+				3E0303D12D3C566400639DF3 /* Sources */,
+				3E0303D22D3C566400639DF3 /* Frameworks */,
+				3E0303D32D3C566400639DF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3E0303D72D3C566400639DF3 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3E0303D82D3C566400639DF3 /* PhotoTranslateAIUITests */,
+			);
+			name = PhotoTranslateAIUITests;
+			packageProductDependencies = (
+			);
+			productName = PhotoTranslateAIUITests;
+			productReference = 3E0303D52D3C566400639DF3 /* PhotoTranslateAIUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		3E0303B32D3C566300639DF3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					3E0303BA2D3C566300639DF3 = {
+						CreatedOnToolsVersion = 16.2;
+					};
+					3E0303CA2D3C566400639DF3 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 3E0303BA2D3C566300639DF3;
+					};
+					3E0303D42D3C566400639DF3 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 3E0303BA2D3C566300639DF3;
+					};
+				};
+			};
+			buildConfigurationList = 3E0303B62D3C566300639DF3 /* Build configuration list for PBXProject "PhotoTranslateAI" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 3E0303B22D3C566300639DF3;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 3E0303BC2D3C566300639DF3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3E0303BA2D3C566300639DF3 /* PhotoTranslateAI */,
+				3E0303CA2D3C566400639DF3 /* PhotoTranslateAITests */,
+				3E0303D42D3C566400639DF3 /* PhotoTranslateAIUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3E0303B92D3C566300639DF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303C92D3C566400639DF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303D32D3C566400639DF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		3E0303B72D3C566300639DF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303C72D3C566400639DF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3E0303D12D3C566400639DF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3E0303CD2D3C566400639DF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E0303BA2D3C566300639DF3 /* PhotoTranslateAI */;
+			targetProxy = 3E0303CC2D3C566400639DF3 /* PBXContainerItemProxy */;
+		};
+		3E0303D72D3C566400639DF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3E0303BA2D3C566300639DF3 /* PhotoTranslateAI */;
+			targetProxy = 3E0303D62D3C566400639DF3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3E0303DD2D3C566400639DF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		3E0303DE2D3C566400639DF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		3E0303E02D3C566400639DF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PhotoTranslateAI/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "PhotoTranslateAI needs camera access to detect and translate text in real-time";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		3E0303E12D3C566400639DF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PhotoTranslateAI/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "PhotoTranslateAI needs camera access to detect and translate text in real-time";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAI;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		3E0303E32D3C566400639DF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoTranslateAI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoTranslateAI";
+			};
+			name = Debug;
+		};
+		3E0303E42D3C566400639DF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoTranslateAI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhotoTranslateAI";
+			};
+			name = Release;
+		};
+		3E0303E62D3C566400639DF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAIUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PhotoTranslateAI;
+			};
+			name = Debug;
+		};
+		3E0303E72D3C566400639DF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.orlinkalev.PhotoTranslateAI.PhotoTranslateAIUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PhotoTranslateAI;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		3E0303B62D3C566300639DF3 /* Build configuration list for PBXProject "PhotoTranslateAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0303DD2D3C566400639DF3 /* Debug */,
+				3E0303DE2D3C566400639DF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E0303DF2D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0303E02D3C566400639DF3 /* Debug */,
+				3E0303E12D3C566400639DF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E0303E22D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0303E32D3C566400639DF3 /* Debug */,
+				3E0303E42D3C566400639DF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3E0303E52D3C566400639DF3 /* Build configuration list for PBXNativeTarget "PhotoTranslateAIUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3E0303E62D3C566400639DF3 /* Debug */,
+				3E0303E72D3C566400639DF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 3E0303B32D3C566300639DF3 /* Project object */;
+}
