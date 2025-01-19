@@ -80,42 +80,86 @@ class CameraPreviewViewController: UIViewController {
     }
     
     private func setupButtons() {
-        let bottomPadding: CGFloat = 50  // Padding from bottom of screen
-        let buttonSize: CGFloat = 60     // All buttons same size
-        let sideSpacing: CGFloat = 30    // Spacing for edge buttons
+        let buttonSize: CGFloat = 80
+        let sideSpacing: CGFloat = 40
+        let bottomPadding: CGFloat = 50
         
-        // Calculate Y position for all bottom buttons
-        let buttonY = view.bounds.height - bottomPadding - buttonSize
+        // Determine if we're in landscape
+        let isLandscape = UIDevice.current.orientation.isLandscape
         
-        // Center shutter/back button
-        let centerX = view.bounds.width/2 - buttonSize/2
-        shutterButton.frame = CGRect(x: centerX,
-                                   y: buttonY,
-                                   width: buttonSize,
-                                   height: buttonSize)
-        view.addSubview(shutterButton)
+        // Calculate button positions based on orientation
+        let buttonY: CGFloat
+        let rightEdge = view.bounds.width - buttonSize - sideSpacing
         
-        backButton.frame = CGRect(x: centerX,
-                                y: buttonY,
-                                width: buttonSize,
-                                height: buttonSize)
+        if isLandscape {
+            // In landscape, position buttons on the right side
+            buttonY = view.bounds.height/2 - buttonSize/2  // Center vertically
+        } else {
+            // In portrait, position buttons at the bottom
+            buttonY = view.bounds.height - bottomPadding - buttonSize
+        }
+        
+        // Position shutter/back button
+        if isLandscape {
+            shutterButton.frame = CGRect(x: rightEdge,
+                                       y: buttonY,
+                                       width: buttonSize,
+                                       height: buttonSize)
+            backButton.frame = shutterButton.frame
+        } else {
+            let centerX = view.bounds.width/2 - buttonSize/2
+            shutterButton.frame = CGRect(x: centerX,
+                                       y: buttonY,
+                                       width: buttonSize,
+                                       height: buttonSize)
+            backButton.frame = shutterButton.frame
+        }
+        
+        // Position crop button
+        if isLandscape {
+            cropButton.frame = CGRect(x: rightEdge,
+                                    y: buttonY - buttonSize - sideSpacing,
+                                    width: buttonSize,
+                                    height: buttonSize)
+        } else {
+            cropButton.frame = CGRect(x: sideSpacing,
+                                    y: buttonY,
+                                    width: buttonSize,
+                                    height: buttonSize)
+        }
+        
+        // Position translate button
+        if isLandscape {
+            translateButton.frame = CGRect(x: rightEdge,
+                                         y: buttonY + buttonSize + sideSpacing,
+                                         width: buttonSize,
+                                         height: buttonSize)
+        } else {
+            translateButton.frame = CGRect(x: rightEdge,
+                                         y: buttonY,
+                                         width: buttonSize,
+                                         height: buttonSize)
+        }
+        
+        // Update corner radius and add to view
+        [shutterButton, backButton, cropButton, translateButton].forEach { button in
+            button.layer.cornerRadius = buttonSize/2
+            view.addSubview(button)
+        }
+        
+        // Set initial visibility
         backButton.isHidden = true
-        view.addSubview(backButton)
-        
-        // Left crop button
-        cropButton.frame = CGRect(x: sideSpacing,
-                                y: buttonY,
-                                width: buttonSize,
-                                height: buttonSize)
-        view.addSubview(cropButton)
-        
-        // Right translate button
-        translateButton.frame = CGRect(x: view.bounds.width - buttonSize - sideSpacing,
-                                     y: buttonY,
-                                     width: buttonSize,
-                                     height: buttonSize)
+        cropButton.isHidden = true
         translateButton.isHidden = true
-        view.addSubview(translateButton)
+        
+        // Update button icons padding
+        let iconPadding: CGFloat = 15
+        let iconInsets = UIEdgeInsets(top: iconPadding, left: iconPadding,
+                                     bottom: iconPadding, right: iconPadding)
+        
+        [shutterButton, backButton, cropButton, translateButton].forEach { button in
+            button.imageEdgeInsets = iconInsets
+        }
         
         // Ensure proper z-index
         view.bringSubviewToFront(cropButton)
@@ -135,26 +179,34 @@ class CameraPreviewViewController: UIViewController {
     @objc private func handleShutterTap() {
         guard let cameraService = cameraService else { return }
         
-        // First focus
         let focusPoint = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
         cameraService.focus(at: focusPoint) { [weak self] in
-            // Wait a bit for stabilization after focus
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 guard let self = self,
                       let frame = cameraService.getCurrentFrame() else { return }
                 
-                // Create screenshot
-                let screenshot = UIImage(cgImage: frame.cgImage!)
+                // Create screenshot with proper orientation
+                let screenshot: UIImage
+                if UIDevice.current.orientation.isLandscape {
+                    if UIDevice.current.orientation == .landscapeLeft {
+                        screenshot = UIImage(cgImage: frame.cgImage!, scale: 1.0, orientation: .left)
+                    } else {
+                        screenshot = UIImage(cgImage: frame.cgImage!, scale: 1.0, orientation: .right)
+                    }
+                } else {
+                    screenshot = UIImage(cgImage: frame.cgImage!, scale: 1.0, orientation: .up)
+                }
+                
+                // Display screenshot with proper fitting
+                let imageView = UIImageView(image: screenshot)
+                imageView.contentMode = .scaleAspectFit
+                self.adjustImageViewFrame(imageView, for: screenshot)
+                
+                self.view.insertSubview(imageView, at: 0)
+                self.screenshotImageView = imageView
                 
                 // Hide camera preview
                 self.previewLayer?.isHidden = true
-                
-                // Display screenshot
-                let imageView = UIImageView(image: screenshot)
-                imageView.contentMode = .scaleAspectFill
-                imageView.frame = self.view.bounds
-                self.view.insertSubview(imageView, at: 0)
-                self.screenshotImageView = imageView
                 
                 // Show selection view and buttons
                 let selectionVC = SelectionViewController()
@@ -179,6 +231,31 @@ class CameraPreviewViewController: UIViewController {
                 self.shutterButton.isHidden = true
                 self.backButton.isHidden = false
             }
+        }
+    }
+    
+    private func adjustImageViewFrame(_ imageView: UIImageView, for image: UIImage) {
+        let aspectRatio = image.size.width / image.size.height
+        let screenRatio = view.bounds.width / view.bounds.height
+        
+        if aspectRatio > screenRatio {
+            // Image is wider than screen
+            let height = view.bounds.width / aspectRatio
+            imageView.frame = CGRect(
+                x: 0,
+                y: (view.bounds.height - height) / 2,
+                width: view.bounds.width,
+                height: height
+            )
+        } else {
+            // Image is taller than screen
+            let width = view.bounds.height * aspectRatio
+            imageView.frame = CGRect(
+                x: (view.bounds.width - width) / 2,
+                y: 0,
+                width: width,
+                height: view.bounds.height
+            )
         }
     }
     
@@ -223,6 +300,10 @@ class CameraPreviewViewController: UIViewController {
         sheet.layer.shadowOffset = CGSize(width: 0, height: -2)
         sheet.layer.shadowRadius = 5
         sheet.layer.shadowOpacity = 0.1
+        
+        // Add pan gesture for swipe-to-dismiss
+        let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSheetPan(_:)))
+        sheet.addGestureRecognizer(panGesture)
         
         // Configure text label
         let textLabel = UILabel()
@@ -371,6 +452,75 @@ class CameraPreviewViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         previewLayer?.frame = view.bounds
+    }
+    
+    // Add orientation change handling
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        coordinator.animate { [weak self] _ in
+            guard let self = self else { return }
+            
+            // Update button layout
+            self.setupButtons()
+            
+            // Restore button visibility states if in screenshot mode
+            if self.screenshotImageView != nil {
+                self.shutterButton.isHidden = true
+                self.backButton.isHidden = false
+                self.cropButton.isHidden = false
+                self.translateButton.isHidden = false
+                
+                // Ensure proper z-index
+                self.view.bringSubviewToFront(self.cropButton)
+                self.view.bringSubviewToFront(self.backButton)
+                self.view.bringSubviewToFront(self.translateButton)
+            }
+            
+            // Adjust screenshot image view frame if it exists
+            if let imageView = self.screenshotImageView,
+               let image = imageView.image {
+                self.adjustImageViewFrame(imageView, for: image)
+            }
+        }
+    }
+    
+    // Add this new method to handle the pan gesture
+    @objc private func handleSheetPan(_ gesture: UIPanGestureRecognizer) {
+        guard let sheet = resultSheet else { return }
+        
+        let translation = gesture.translation(in: view)
+        let velocity = gesture.velocity(in: view)
+        
+        switch gesture.state {
+        case .changed:
+            // Only allow downward dragging
+            if translation.y >= 0 {
+                sheet.frame.origin.y = view.bounds.height - sheet.bounds.height + translation.y
+            }
+            
+        case .ended:
+            let sheetHeight = sheet.bounds.height
+            let currentPosition = sheet.frame.origin.y
+            let dismissThreshold = view.bounds.height - (sheetHeight * 0.7)
+            
+            // Dismiss if dragged past threshold or flicked down with sufficient velocity
+            if currentPosition > dismissThreshold || velocity.y > 500 {
+                UIView.animate(withDuration: 0.2, animations: {
+                    sheet.frame.origin.y = self.view.bounds.height
+                }) { _ in
+                    self.closeResultSheet()
+                }
+            } else {
+                // Return to original position
+                UIView.animate(withDuration: 0.2) {
+                    sheet.frame.origin.y = self.view.bounds.height - sheetHeight
+                }
+            }
+            
+        default:
+            break
+        }
     }
 }
 
