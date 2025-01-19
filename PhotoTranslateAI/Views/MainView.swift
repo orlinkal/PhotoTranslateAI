@@ -3,88 +3,62 @@ import AVFoundation
 
 struct MainView: View {
     @StateObject private var cameraService = CameraService()
-    @StateObject private var textRecognitionService = TextRecognitionService()
-    @State private var isLanguageMenuShowing = false
-    @State private var sourceLanguage = Language.autoDetect
-    @State private var targetLanguage = Language.english
+    @State private var isMenuOpen = false
+    @State private var isAutoDetectEnabled = false
     
     var body: some View {
         ZStack {
-            if cameraService.cameraPermissionGranted {
-                CameraPreviewView(
-                    cameraService: cameraService,
-                    textBoxes: textRecognitionService.textBoxes
-                )
+            // Camera preview
+            CameraPreviewView(cameraService: cameraService)
                 .edgesIgnoringSafeArea(.all)
-                
-                // UI Elements
-                VStack {
-                    // Top bar with language selection
-                    HStack {
-                        Button(action: { isLanguageMenuShowing.toggle() }) {
-                            HStack {
-                                Image(systemName: "line.horizontal.3")
-                                    .font(.title)
-                                    .foregroundColor(.white)
-                            }
-                            .padding()
-                            .background(Color.black.opacity(0.7))
-                            .clipShape(Circle())
-                        }
-                        
-                        Spacer()
-                        
-                        Text("\(sourceLanguage.name) → \(targetLanguage.name)")
+            
+            // Menu button
+            VStack {
+                HStack {
+                    Button(action: { isMenuOpen.toggle() }) {
+                        Image(systemName: "line.horizontal.3")
                             .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.black.opacity(0.7))
-                            .cornerRadius(8)
+                            .font(.system(size: 24))
+                            .padding()
+                            .background(Color.black.opacity(0.5))
+                            .clipShape(Circle())
                     }
                     .padding()
                     
                     Spacer()
                     
-                    // Bottom text display
-                    if !textRecognitionService.detectedText.isEmpty {
-                        VStack {
-                            Text("Detected Text:")
-                                .foregroundColor(.white)
-                                .font(.headline)
-                            Text(textRecognitionService.detectedText)
-                                .padding()
-                                .background(Color.black.opacity(0.7))
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
-                        }
-                        .padding()
-                    } else {
-                        Text("No text detected - Point camera at text")
-                            .padding()
-                            .background(Color.black.opacity(0.7))
-                            .foregroundColor(.yellow)
-                            .cornerRadius(10)
-                            .padding()
+                    // Auto-detect toggle
+                    Button(action: { isAutoDetectEnabled.toggle() }) {
+                        Text(isAutoDetectEnabled ? "Auto ON" : "Auto OFF")
+                            .foregroundColor(.white)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color.black.opacity(0.5))
+                            .cornerRadius(20)
                     }
+                    .padding()
                 }
+                Spacer()
+            }
+            
+            // Side menu
+            if isMenuOpen {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        isMenuOpen = false
+                    }
                 
-                // Language menu
-                LanguageSelectionMenu(
-                    isShowing: $isLanguageMenuShowing,
-                    sourceLanguage: $sourceLanguage,
-                    targetLanguage: $targetLanguage
-                )
-            } else {
-                VStack {
-                    Text("Camera Access Required")
-                        .font(.title)
-                    Text("Please enable camera access in Settings to use this app.")
-                        .multilineTextAlignment(.center)
-                        .padding()
+                HStack {
+                    MenuView()
+                        .frame(width: 250)
+                        .background(Color(.systemBackground))
+                        .offset(x: isMenuOpen ? 0 : -250)
+                        .animation(.default, value: isMenuOpen)
+                    
+                    Spacer()
                 }
             }
-        }
-        .onAppear {
-            cameraService.textRecognitionService = textRecognitionService
         }
     }
 }
