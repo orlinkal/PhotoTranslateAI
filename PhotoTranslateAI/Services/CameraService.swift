@@ -2,24 +2,37 @@ import AVFoundation
 import SwiftUI
 
 class CameraService: NSObject, ObservableObject {
-    @Published var session = AVCaptureSession()
+    @Published var previewLayer: AVCaptureVideoPreviewLayer?
     @Published var cameraPermissionGranted = false
-    @Published var error: Error?
-    
+    private let session = AVCaptureSession()
     private let sessionQueue = DispatchQueue(label: "camera-session")
+    weak var textRecognitionService: TextRecognitionService?
+    private var isSessionRunning = false
     
     override init() {
         super.init()
+        setupPreviewLayer()
         checkPermission()
     }
     
+    private func setupPreviewLayer() {
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
+        previewLayer.videoGravity = .resizeAspectFill
+        previewLayer.connection?.videoOrientation = .portrait
+        self.previewLayer = previewLayer
+    }
+    
     private func checkPermission() {
+        print("Checking camera permission...")
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
+            print("Camera permission already granted")
             cameraPermissionGranted = true
             setupCamera()
         case .notDetermined:
+            print("Requesting camera permission...")
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                print("Camera permission response: \(granted)")
                 DispatchQueue.main.async {
                     self?.cameraPermissionGranted = granted
                     if granted {
@@ -28,6 +41,7 @@ class CameraService: NSObject, ObservableObject {
                 }
             }
         default:
+            print("Camera permission denied")
             cameraPermissionGranted = false
         }
     }
@@ -38,48 +52,54 @@ class CameraService: NSObject, ObservableObject {
             
             self.session.beginConfiguration()
             
-            // Clear any existing inputs
-            for input in self.session.inputs {
-                self.session.removeInput(input)
+            // Add video input
+            guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+                  let videoInput = try? AVCaptureDeviceInput(device: videoDevice) else {
+                return
             }
             
-            do {
-                guard let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera,
-                                                              for: .video,
-                                                              position: .back) else {
-                    print("Failed to get camera device")
-                    return
+            if self.session.canAddInput(videoInput) {
+                self.session.addInput(videoInput)
+            }
+            
+            // Add video output
+            let videoOutput = AVCaptureVideoDataOutput()
+            videoOutput.setSampleBufferDelegate(self, queue: self.sessionQueue)
+            
+            if self.session.canAddOutput(videoOutput) {
+                self.session.addOutput(videoOutput)
+                if let connection = videoOutput.connection(with: .video) {
+                    connection.videoOrientation = .portrait
                 }
-                
-                let videoInput = try AVCaptureDeviceInput(device: videoDevice)
-                
-                if self.session.canAddInput(videoInput) {
-                    self.session.addInput(videoInput)
-                    print("Camera input added successfully")
-                } else {
-                    print("Could not add camera input")
-                    return
-                }
-                
-                self.session.commitConfiguration()
-                
-                DispatchQueue.main.async {
-                    self.session.startRunning()
-                    print("Camera session started")
-                }
-                
-            } catch {
-                print("Error setting up camera: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.error = error
-                }
+            }
+            
+            self.session.commitConfiguration()
+            
+            DispatchQueue.main.async {
+                self.startSession()
             }
         }
     }
     
-    func stop() {
-        sessionQueue.async {
-            self.session.stopRunning()
+    func startSession() {
+        guard !isSessionRunning else { return }
+        sessionQueue.async { [weak self] in
+            self?.session.startRunning()
+            self?.isSessionRunning = true
         }
+    }
+    
+    func stopSession() {
+        guard isSessionRunning else { return }
+        sessionQueue.async { [weak self] in
+            self?.session.stopRunning()
+            self?.isSessionRunning = false
+        }
+    }
+}
+
+extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
+    func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        textRecognitionService?.processFrame(sampleBuffer)
     }
 } 

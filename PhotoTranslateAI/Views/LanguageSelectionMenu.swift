@@ -17,77 +17,63 @@ struct LanguageSelectionMenu: View {
                         .bold()
                         .padding(.top, 40)
                     
+                    // Source Languages (From)
                     VStack(alignment: .leading, spacing: 10) {
                         Text("From:")
                             .font(.headline)
                         
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                // Auto-detect is always first
+                        VStack(spacing: 0) {
+                            ForEach(languageManager.recentSourceLanguages) { language in
                                 LanguageButton(
-                                    language: .autoDetect,
-                                    isSelected: sourceLanguage == .autoDetect
+                                    language: language,
+                                    isSelected: sourceLanguage == language
                                 ) {
-                                    sourceLanguage = .autoDetect
+                                    sourceLanguage = language
                                 }
-                                
-                                // Recent languages
-                                ForEach(languageManager.recentSourceLanguages) { language in
-                                    LanguageButton(
-                                        language: language,
-                                        isSelected: sourceLanguage == language
-                                    ) {
-                                        sourceLanguage = language
-                                        languageManager.updateRecentSource(language)
-                                    }
-                                }
-                                
-                                // More button
-                                Button(action: {
-                                    showingAllSourceLanguages.toggle()
-                                }) {
-                                    HStack {
-                                        Text("More Languages...")
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .padding(.vertical, 8)
-                                }
-                                .foregroundColor(.blue)
                             }
+                            
+                            // More button
+                            Button(action: {
+                                showingAllSourceLanguages.toggle()
+                            }) {
+                                HStack {
+                                    Text("More Languages...")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            .foregroundColor(.blue)
                         }
                     }
                     
+                    // Target Languages (To)
                     VStack(alignment: .leading, spacing: 10) {
                         Text("To:")
                             .font(.headline)
                         
-                        ScrollView {
-                            VStack(spacing: 0) {
-                                // Recent target languages
-                                ForEach(languageManager.recentTargetLanguages) { language in
-                                    LanguageButton(
-                                        language: language,
-                                        isSelected: targetLanguage == language
-                                    ) {
-                                        targetLanguage = language
-                                        languageManager.updateRecentTarget(language)
-                                    }
+                        VStack(spacing: 0) {
+                            ForEach(languageManager.recentTargetLanguages) { language in
+                                LanguageButton(
+                                    language: language,
+                                    isSelected: targetLanguage == language
+                                ) {
+                                    targetLanguage = language
                                 }
-                                
-                                // More button
-                                Button(action: {
-                                    showingAllTargetLanguages.toggle()
-                                }) {
-                                    HStack {
-                                        Text("More Languages...")
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
-                                    }
-                                    .padding(.vertical, 8)
-                                }
-                                .foregroundColor(.blue)
                             }
+                            
+                            // More button
+                            Button(action: {
+                                showingAllTargetLanguages.toggle()
+                            }) {
+                                HStack {
+                                    Text("More Languages...")
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                }
+                                .padding(.vertical, 8)
+                            }
+                            .foregroundColor(.blue)
                         }
                     }
                     
@@ -113,20 +99,18 @@ struct LanguageSelectionMenu: View {
         .sheet(isPresented: $showingAllSourceLanguages) {
             AllLanguagesView(
                 selectedLanguage: $sourceLanguage,
-                languages: Language.allLanguages,
+                languages: languageManager.getRemainingSourceLanguages(),
                 onSelect: { language in
                     languageManager.updateRecentSource(language)
-                    showingAllSourceLanguages = false
                 }
             )
         }
         .sheet(isPresented: $showingAllTargetLanguages) {
             AllLanguagesView(
                 selectedLanguage: $targetLanguage,
-                languages: Language.allLanguages.filter { $0.code != "auto" },
+                languages: languageManager.getRemainingTargetLanguages(),
                 onSelect: { language in
                     languageManager.updateRecentTarget(language)
-                    showingAllTargetLanguages = false
                 }
             )
         }
@@ -148,8 +132,10 @@ struct LanguageButton: View {
                         .foregroundColor(.blue)
                 }
             }
+            .contentShape(Rectangle())
             .padding(.vertical, 8)
         }
+        .buttonStyle(PlainButtonStyle())
         .foregroundColor(.primary)
     }
 }
@@ -166,6 +152,7 @@ struct AllLanguagesView: View {
                 Button(action: {
                     selectedLanguage = language
                     onSelect(language)
+                    dismiss()
                 }) {
                     HStack {
                         Text(language.name)

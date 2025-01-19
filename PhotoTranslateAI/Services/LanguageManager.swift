@@ -1,54 +1,74 @@
 import Foundation
 
 class LanguageManager: ObservableObject {
-    @Published var recentSourceLanguages: [Language]
-    @Published var recentTargetLanguages: [Language]
+    @Published var recentSourceLanguages: [Language] = []
+    @Published var recentTargetLanguages: [Language] = []
     
-    private let sourceKey = "recentSourceLanguages"
-    private let targetKey = "recentTargetLanguages"
+    private let defaultLanguages = [
+        Language.english,
+        Language.german,
+        Language.spanish
+    ]
     
     init() {
         // Initialize with default languages
-        self.recentSourceLanguages = [Language.english, Language.german, Language.spanish]
-        self.recentTargetLanguages = [Language.english, Language.german, Language.spanish]
+        recentSourceLanguages = [
+            Language.autoDetect
+        ] + defaultLanguages
         
-        // Load saved recent languages if they exist
-        if let savedSource = UserDefaults.standard.data(forKey: sourceKey),
-           let decodedSource = try? JSONDecoder().decode([Language].self, from: savedSource) {
-            self.recentSourceLanguages = decodedSource
-        }
-        
-        if let savedTarget = UserDefaults.standard.data(forKey: targetKey),
-           let decodedTarget = try? JSONDecoder().decode([Language].self, from: savedTarget) {
-            self.recentTargetLanguages = decodedTarget
-        }
+        recentTargetLanguages = defaultLanguages
     }
     
     func updateRecentSource(_ language: Language) {
-        if language.code == "auto" { return }
-        recentSourceLanguages.removeAll { $0 == language }
-        recentSourceLanguages.insert(language, at: 0)
-        while recentSourceLanguages.count > 3 {
-            recentSourceLanguages.removeLast()
+        guard language != .autoDetect else { return }
+        
+        // If the language is already in the recent list, just update selection
+        if recentSourceLanguages.contains(language) {
+            return
         }
-        saveRecents()
+        
+        // Keep Auto Detect at index 0
+        var updatedList = recentSourceLanguages
+        
+        // Remove the last language (keeping Auto Detect)
+        if updatedList.count > 1 {
+            updatedList.removeLast()
+        }
+        
+        // Add the new language after Auto Detect
+        updatedList.insert(language, at: 1)
+        
+        recentSourceLanguages = updatedList
     }
     
     func updateRecentTarget(_ language: Language) {
-        recentTargetLanguages.removeAll { $0 == language }
-        recentTargetLanguages.insert(language, at: 0)
-        while recentTargetLanguages.count > 3 {
+        // If the language is already in the recent list, just update selection
+        if recentTargetLanguages.contains(language) {
+            return
+        }
+        
+        // Remove the last language
+        if recentTargetLanguages.count >= 3 {
             recentTargetLanguages.removeLast()
         }
-        saveRecents()
+        
+        // Add the new language at the beginning
+        recentTargetLanguages.insert(language, at: 0)
     }
     
-    private func saveRecents() {
-        if let encoded = try? JSONEncoder().encode(recentSourceLanguages) {
-            UserDefaults.standard.set(encoded, forKey: sourceKey)
+    // Get remaining languages for "More options"
+    func getRemainingSourceLanguages() -> [Language] {
+        let allLanguages = Language.allLanguages.filter { $0 != .autoDetect }
+        return allLanguages.filter { language in
+            !recentSourceLanguages.contains(language)
         }
-        if let encoded = try? JSONEncoder().encode(recentTargetLanguages) {
-            UserDefaults.standard.set(encoded, forKey: targetKey)
-        }
+    }
+    
+    func getRemainingTargetLanguages() -> [Language] {
+        return Language.allLanguages
+            .filter { $0 != .autoDetect }
+            .filter { language in
+                !recentTargetLanguages.contains(language)
+            }
     }
 } 
