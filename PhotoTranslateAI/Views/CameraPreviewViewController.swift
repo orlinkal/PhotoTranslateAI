@@ -6,6 +6,8 @@ import SwiftUI
 class CameraPreviewViewController: UIViewController {
     var previewLayer: AVCaptureVideoPreviewLayer?
     var highlightLayers: [CAShapeLayer] = []
+    private var debugLabels: [UILabel] = []
+    private let showDebugInfo = true  // Toggle for debug information
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,25 +21,50 @@ class CameraPreviewViewController: UIViewController {
     }
     
     func updateTextBoxes(_ boxes: [CGRect]) {
-        // Remove old highlight layers
+        // Remove old highlight layers and debug labels
         highlightLayers.forEach { $0.removeFromSuperlayer() }
         highlightLayers.removeAll()
+        debugLabels.forEach { $0.removeFromSuperview() }
+        debugLabels.removeAll()
         
         // Create new highlight layers
-        for box in boxes {
-            // Convert normalized coordinates to view coordinates
-            let viewBox = previewLayer?.layerRectConverted(fromMetadataOutputRect: box) ?? .zero
+        for (index, box) in boxes.enumerated() {
+            guard let previewLayer = previewLayer else { continue }
             
+            // For portrait mode:
+            // 1. Swap x and y coordinates due to 90-degree rotation
+            // 2. Flip coordinates to match device orientation
+            // 3. Correct the horizontal mirroring
+            let viewBox = CGRect(
+                x: (1 - box.maxY) * previewLayer.frame.width,  // Changed from minY to (1 - maxY)
+                y: (1 - box.maxX) * previewLayer.frame.height,
+                width: box.height * previewLayer.frame.width,
+                height: box.width * previewLayer.frame.height
+            )
+            
+            // Create highlight layer
             let highlightLayer = CAShapeLayer()
-            highlightLayer.frame = view.bounds
+            highlightLayer.frame = previewLayer.frame
             highlightLayer.fillColor = UIColor.clear.cgColor
-            highlightLayer.strokeColor = UIColor.yellow.cgColor
-            highlightLayer.lineWidth = 2
-            highlightLayer.path = UIBezierPath(rect: viewBox).cgPath
+            highlightLayer.strokeColor = UIColor.red.cgColor
+            highlightLayer.lineWidth = 2.0
+            highlightLayer.opacity = 0.7
             
-            if let previewLayer = previewLayer {
-                previewLayer.addSublayer(highlightLayer)
-                highlightLayers.append(highlightLayer)
+            let path = UIBezierPath(rect: viewBox)
+            highlightLayer.path = path.cgPath
+            
+            previewLayer.addSublayer(highlightLayer)
+            highlightLayers.append(highlightLayer)
+            
+            if showDebugInfo {
+                // Add debug label
+                let label = UILabel()
+                label.text = String(format: "Box %d: (%.1f, %.1f)", index, viewBox.origin.x, viewBox.origin.y)
+                label.textColor = .red
+                label.font = .systemFont(ofSize: 10)
+                label.frame = CGRect(x: viewBox.minX, y: viewBox.minY - 15, width: 200, height: 15)
+                view.addSubview(label)
+                debugLabels.append(label)
             }
         }
     }
