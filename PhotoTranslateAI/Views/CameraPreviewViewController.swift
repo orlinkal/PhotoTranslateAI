@@ -34,12 +34,15 @@ class CameraPreviewViewController: UIViewController {
             // For portrait mode:
             // 1. Swap x and y coordinates due to 90-degree rotation
             // 2. Flip coordinates to match device orientation
-            // 3. Correct the horizontal mirroring
+            // 3. Apply compensation from center to avoid offset
+            let compensationFactor: CGFloat = 1.2
+            let centerOffset = previewLayer.bounds.width * (compensationFactor - 1) / 2
+            
             let viewBox = CGRect(
-                x: (1 - box.maxY) * previewLayer.frame.width,  // Changed from minY to (1 - maxY)
-                y: (1 - box.maxX) * previewLayer.frame.height,
-                width: box.height * previewLayer.frame.width,
-                height: box.width * previewLayer.frame.height
+                x: (1 - box.maxY) * previewLayer.bounds.width * compensationFactor - centerOffset,
+                y: (1 - box.maxX) * previewLayer.bounds.height,
+                width: box.height * previewLayer.bounds.width,
+                height: box.width * previewLayer.bounds.height
             )
             
             // Create highlight layer
