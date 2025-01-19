@@ -8,6 +8,8 @@ class CameraService: NSObject, ObservableObject {
     private let sessionQueue = DispatchQueue(label: "camera-session")
     weak var textRecognitionService: TextRecognitionService?
     private var isSessionRunning = false
+    private var videoOutput: AVCaptureVideoDataOutput?
+    private var currentVideoFrame: CMSampleBuffer?
     
     override init() {
         super.init()
@@ -116,6 +118,7 @@ class CameraService: NSObject, ObservableObject {
             
             if self.session.canAddOutput(videoOutput) {
                 self.session.addOutput(videoOutput)
+                self.videoOutput = videoOutput
                 if let connection = videoOutput.connection(with: .video) {
                     connection.videoOrientation = .portrait
                 }
@@ -123,9 +126,8 @@ class CameraService: NSObject, ObservableObject {
             
             self.session.commitConfiguration()
             
-            DispatchQueue.main.async {
-                self.startSession()
-            }
+            self.session.startRunning()
+            self.isSessionRunning = true
         }
     }
     
@@ -148,6 +150,23 @@ class CameraService: NSObject, ObservableObject {
 
 extension CameraService: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+        currentVideoFrame = sampleBuffer
+        
         textRecognitionService?.processFrame(sampleBuffer)
+    }
+    
+    func getCurrentFrame() -> UIImage? {
+        guard let sampleBuffer = currentVideoFrame,
+              let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {
+            return nil
+        }
+        
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
+            return nil
+        }
+        
+        return UIImage(cgImage: cgImage)
     }
 } 
