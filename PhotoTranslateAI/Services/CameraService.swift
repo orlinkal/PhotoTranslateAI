@@ -13,12 +13,60 @@ class CameraService: NSObject, ObservableObject {
         super.init()
         setupPreviewLayer()
         checkPermission()
+        
+        // Add observer for device orientation changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(updatePreviewOrientation),
+            name: UIDevice.orientationDidChangeNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func updatePreviewOrientation() {
+        guard let connection = previewLayer?.connection else { return }
+        
+        let currentDevice = UIDevice.current
+        let orientation = currentDevice.orientation
+        
+        switch orientation {
+        case .portrait:
+            connection.videoOrientation = .portrait
+        case .landscapeRight:
+            connection.videoOrientation = .landscapeLeft
+        case .landscapeLeft:
+            connection.videoOrientation = .landscapeRight
+        case .portraitUpsideDown:
+            connection.videoOrientation = .portraitUpsideDown
+        default:
+            connection.videoOrientation = .portrait
+        }
     }
     
     private func setupPreviewLayer() {
         let previewLayer = AVCaptureVideoPreviewLayer(session: session)
         previewLayer.videoGravity = .resizeAspectFill
-        previewLayer.connection?.videoOrientation = .portrait
+        
+        // Set initial orientation
+        if let connection = previewLayer.connection {
+            let currentDevice = UIDevice.current
+            let orientation = currentDevice.orientation
+            let previewLayerConnection = connection
+            
+            switch orientation {
+            case .portrait:
+                previewLayerConnection.videoOrientation = .portrait
+            case .landscapeRight:
+                previewLayerConnection.videoOrientation = .landscapeLeft
+            case .landscapeLeft:
+                previewLayerConnection.videoOrientation = .landscapeRight
+            case .portraitUpsideDown:
+                previewLayerConnection.videoOrientation = .portraitUpsideDown
+            default:
+                previewLayerConnection.videoOrientation = .portrait
+            }
+        }
+        
         self.previewLayer = previewLayer
     }
     

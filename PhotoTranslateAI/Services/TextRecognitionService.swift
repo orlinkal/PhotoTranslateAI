@@ -108,7 +108,7 @@ class TextRecognitionService: NSObject, ObservableObject {
         
         // Determine the correct orientation based on device orientation
         let deviceOrientation = UIDevice.current.orientation
-        var orientation: CGImagePropertyOrientation = .right // Default for portrait
+        var orientation: CGImagePropertyOrientation
         
         switch deviceOrientation {
         case .portrait:
@@ -116,9 +116,9 @@ class TextRecognitionService: NSObject, ObservableObject {
         case .portraitUpsideDown:
             orientation = .left
         case .landscapeLeft:
-            orientation = .up
+            orientation = .down  // Changed from .up
         case .landscapeRight:
-            orientation = .down
+            orientation = .up    // Changed from .down
         default:
             orientation = .right
         }

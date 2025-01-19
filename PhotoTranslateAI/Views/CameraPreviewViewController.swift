@@ -31,19 +31,35 @@ class CameraPreviewViewController: UIViewController {
         for (index, box) in boxes.enumerated() {
             guard let previewLayer = previewLayer else { continue }
             
-            // For portrait mode:
-            // 1. Swap x and y coordinates due to 90-degree rotation
-            // 2. Flip coordinates to match device orientation
-            // 3. Apply compensation from center to avoid offset
-            let compensationFactor: CGFloat = 1.2
+            let deviceOrientation = UIDevice.current.orientation
+            let viewBox: CGRect
+            let compensationFactor: CGFloat = 1.0  // Reduced from 1.2 to match text movement speed
             let centerOffset = previewLayer.bounds.width * (compensationFactor - 1) / 2
             
-            let viewBox = CGRect(
-                x: (1 - box.maxY) * previewLayer.bounds.width * compensationFactor - centerOffset,
-                y: (1 - box.maxX) * previewLayer.bounds.height,
-                width: box.height * previewLayer.bounds.width,
-                height: box.width * previewLayer.bounds.height
-            )
+            switch deviceOrientation {
+            case .landscapeLeft:
+                viewBox = CGRect(
+                    x: box.minY * previewLayer.bounds.width * compensationFactor - centerOffset,
+                    y: box.minX * previewLayer.bounds.height,  // Removed the (1 - maxX) to fix inverted Y movement
+                    width: box.height * previewLayer.bounds.width,
+                    height: box.width * previewLayer.bounds.height
+                )
+            case .landscapeRight:
+                viewBox = CGRect(
+                    x: (1 - box.maxY) * previewLayer.bounds.width * compensationFactor - centerOffset,
+                    y: (1 - box.maxX) * previewLayer.bounds.height,  // Changed to (1 - maxX) to fix inverted Y movement
+                    width: box.height * previewLayer.bounds.width,
+                    height: box.width * previewLayer.bounds.height
+                )
+            default:
+                // For portrait mode (existing working code):
+                viewBox = CGRect(
+                    x: (1 - box.maxY) * previewLayer.bounds.width * compensationFactor - centerOffset,
+                    y: (1 - box.maxX) * previewLayer.bounds.height,
+                    width: box.height * previewLayer.bounds.width,
+                    height: box.width * previewLayer.bounds.height
+                )
+            }
             
             // Create highlight layer
             let highlightLayer = CAShapeLayer()
