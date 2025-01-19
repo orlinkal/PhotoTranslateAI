@@ -11,6 +11,11 @@ class CameraService: NSObject, ObservableObject {
     private var videoOutput: AVCaptureVideoDataOutput?
     private var currentVideoFrame: CMSampleBuffer?
     
+    private var captureDevice: AVCaptureDevice? {
+        guard let videoInput = session.inputs.first as? AVCaptureDeviceInput else { return nil }
+        return videoInput.device
+    }
+    
     override init() {
         super.init()
         setupPreviewLayer()
@@ -144,6 +149,39 @@ class CameraService: NSObject, ObservableObject {
         sessionQueue.async { [weak self] in
             self?.session.stopRunning()
             self?.isSessionRunning = false
+        }
+    }
+    
+    func focus(at point: CGPoint, completion: @escaping () -> Void) {
+        guard let device = captureDevice else {
+            completion()
+            return
+        }
+        
+        do {
+            try device.lockForConfiguration()
+            
+            // Check if device supports focus point
+            if device.isFocusPointOfInterestSupported {
+                device.focusPointOfInterest = point
+                device.focusMode = .autoFocus
+            }
+            
+            // Check if device supports exposure point
+            if device.isExposurePointOfInterestSupported {
+                device.exposurePointOfInterest = point
+                device.exposureMode = .autoExpose
+            }
+            
+            device.unlockForConfiguration()
+            
+            // Wait a bit for focus to adjust before taking the picture
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                completion()
+            }
+        } catch {
+            print("Error setting focus: \(error.localizedDescription)")
+            completion()
         }
     }
 }
