@@ -4,6 +4,11 @@ import Vision
 import SwiftUI
 import TOCropViewController
 
+// Add this at the top of the file, outside any class
+private class Selection {
+    var selectedRow: Int = 0
+}
+
 class CameraPreviewViewController: UIViewController {
     var previewLayer: AVCaptureVideoPreviewLayer?
     var onTextSelected: ((String) -> Void)?
@@ -12,6 +17,12 @@ class CameraPreviewViewController: UIViewController {
     private var selectionViewController: SelectionViewController?
     private var resultSheet: UIView?
     private var recognizedTextLabel: UILabel?
+    private var sourceLanguage: String = "English"
+    private var targetLanguage: String = "Spanish"
+    private var translatedTextLabel: UILabel?
+    private var languageToggle: UISegmentedControl?
+    private var scrollView: UIScrollView?
+    private var activityIndicator: UIActivityIndicatorView?
     
     // UI Elements
     private lazy var shutterButton: UIButton = {
@@ -286,10 +297,22 @@ class CameraPreviewViewController: UIViewController {
     @objc private func handleTranslateTap() {
         guard let screenshot = screenshotImageView?.image else { return }
         
-        // Start loading indicator
+        // Add dimmed background view for tap-to-dismiss
+        let backgroundView = UIView(frame: view.bounds)
+        backgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        backgroundView.tag = 999 // Tag for identification
+        
+        // Add tap gesture to background
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap))
+        backgroundView.addGestureRecognizer(tapGesture)
+        
+        view.addSubview(backgroundView)
+        
+        // Create activity indicator
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.color = .label
         activityIndicator.startAnimating()
+        self.activityIndicator = activityIndicator
         
         // Setup bottom sheet
         let sheet = UIView()
@@ -305,6 +328,13 @@ class CameraPreviewViewController: UIViewController {
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handleSheetPan(_:)))
         sheet.addGestureRecognizer(panGesture)
         
+        // Configure scroll view
+        let scrollView = UIScrollView()
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.alwaysBounceVertical = true
+        scrollView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        self.scrollView = scrollView
+        
         // Configure text label
         let textLabel = UILabel()
         textLabel.numberOfLines = 0
@@ -312,55 +342,47 @@ class CameraPreviewViewController: UIViewController {
         textLabel.textColor = .label
         textLabel.text = "Recognizing text..."
         
-        // Configure scroll view
-        let scrollView = UIScrollView()
-        scrollView.showsVerticalScrollIndicator = true
-        scrollView.alwaysBounceVertical = true
-        scrollView.contentInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        // Add language selector
+        let languageToggle = UISegmentedControl(items: [sourceLanguage, targetLanguage])
+        languageToggle.selectedSegmentIndex = 0
+        languageToggle.addTarget(self, action: #selector(handleLanguageToggle(_:)), for: .valueChanged)
+        
+        // Add language selection buttons
+        let sourceLanguageButton = UIButton(type: .system)
+        sourceLanguageButton.setImage(UIImage(systemName: "globe"), for: .normal)
+        sourceLanguageButton.addTarget(self, action: #selector(selectSourceLanguage), for: .touchUpInside)
+        sourceLanguageButton.tag = 1  // Important: Set tag for identification
+        
+        let targetLanguageButton = UIButton(type: .system)
+        targetLanguageButton.setImage(UIImage(systemName: "globe"), for: .normal)
+        targetLanguageButton.addTarget(self, action: #selector(selectTargetLanguage), for: .touchUpInside)
+        targetLanguageButton.tag = 2  // Important: Set tag for identification
         
         // Add views to hierarchy
         scrollView.addSubview(textLabel)
         sheet.addSubview(scrollView)
         sheet.addSubview(activityIndicator)
+        sheet.addSubview(sourceLanguageButton)
+        sheet.addSubview(targetLanguageButton)
+        sheet.addSubview(languageToggle)
         view.addSubview(sheet)
         
-        // Add close button
-        let closeButton = UIButton(type: .system)
-        closeButton.setImage(UIImage(systemName: "xmark.circle.fill"), for: .normal)
-        closeButton.tintColor = .secondaryLabel
-        closeButton.addTarget(self, action: #selector(closeResultSheet), for: .touchUpInside)
-        sheet.addSubview(closeButton)
-        
-        // Layout
-        sheet.frame = CGRect(x: 0, y: view.bounds.height,
-                            width: view.bounds.width,
-                            height: view.bounds.height / 2)
-        
-        closeButton.frame = CGRect(x: view.bounds.width - 50, y: 10, width: 30, height: 30)
-        
-        // Configure scroll view frame
-        let scrollViewTopPadding: CGFloat = 50
-        scrollView.frame = CGRect(x: 0,
-                                y: scrollViewTopPadding,
-                                width: sheet.bounds.width,
-                                height: sheet.bounds.height - scrollViewTopPadding - 10)
-        
-        // Configure text label frame
-        let horizontalPadding: CGFloat = 20
-        textLabel.frame = CGRect(x: horizontalPadding,
-                               y: 0,
-                               width: scrollView.bounds.width - (horizontalPadding * 2),
-                               height: 0)
-        
-        activityIndicator.center = CGPoint(x: sheet.bounds.width/2, y: 100)
-        
-        // Animate sheet presentation
-        UIView.animate(withDuration: 0.3) {
-            sheet.frame.origin.y = self.view.bounds.height - sheet.bounds.height
-        }
-        
+        // Store references
         resultSheet = sheet
         recognizedTextLabel = textLabel
+        self.languageToggle = languageToggle
+        
+        // Layout everything using our helper method
+        layoutBottomSheet(sheet)
+        
+        // Animate background and sheet presentation
+        backgroundView.alpha = 0
+        sheet.frame.origin.y = view.bounds.height
+        
+        UIView.animate(withDuration: 0.3) {
+            backgroundView.alpha = 1
+            sheet.frame.origin.y = self.view.bounds.height - sheet.bounds.height
+        }
         
         // Perform text recognition
         recognizeText(in: screenshot) { [weak self] recognizedText in
@@ -370,11 +392,10 @@ class CameraPreviewViewController: UIViewController {
                 
                 if let text = recognizedText {
                     textLabel.text = text
-                    // Update layout after text is set
                     textLabel.sizeToFit()
                     scrollView.contentSize = CGSize(
                         width: scrollView.bounds.width,
-                        height: textLabel.frame.height + 20 // Add some padding
+                        height: textLabel.frame.height + 20
                     )
                 } else {
                     textLabel.text = "No text found in image"
@@ -431,16 +452,6 @@ class CameraPreviewViewController: UIViewController {
         }
     }
     
-    @objc private func closeResultSheet() {
-        UIView.animate(withDuration: 0.3) {
-            self.resultSheet?.frame.origin.y = self.view.bounds.height
-        } completion: { _ in
-            self.resultSheet?.removeFromSuperview()
-            self.resultSheet = nil
-            self.recognizedTextLabel = nil
-        }
-    }
-    
     @objc private func handleCropTap() {
         guard let screenshot = screenshotImageView?.image else { return }
         
@@ -470,11 +481,6 @@ class CameraPreviewViewController: UIViewController {
                 self.backButton.isHidden = false
                 self.cropButton.isHidden = false
                 self.translateButton.isHidden = false
-                
-                // Ensure proper z-index
-                self.view.bringSubviewToFront(self.cropButton)
-                self.view.bringSubviewToFront(self.backButton)
-                self.view.bringSubviewToFront(self.translateButton)
             }
             
             // Adjust screenshot image view frame if it exists
@@ -482,6 +488,36 @@ class CameraPreviewViewController: UIViewController {
                let image = imageView.image {
                 self.adjustImageViewFrame(imageView, for: image)
             }
+            
+            // Handle bottom sheet orientation change
+            if let sheet = self.resultSheet {
+                // Ensure background view covers entire screen in new orientation
+                if let backgroundView = self.view.viewWithTag(999) {
+                    backgroundView.frame = self.view.bounds
+                    // Ensure background is above buttons but below sheet
+                    self.view.bringSubviewToFront(backgroundView)
+                    self.view.bringSubviewToFront(sheet)
+                }
+                
+                // Update sheet frame for new orientation
+                self.layoutBottomSheet(sheet)
+                
+                // Ensure proper z-index ordering
+                self.view.subviews.forEach { view in
+                    if view != sheet && view != self.view.viewWithTag(999) {
+                        self.view.sendSubviewToBack(view)
+                    }
+                }
+                
+                // Re-enable tap gesture if needed
+                if let backgroundView = self.view.viewWithTag(999),
+                   backgroundView.gestureRecognizers?.isEmpty ?? true {
+                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.handleBackgroundTap))
+                    backgroundView.addGestureRecognizer(tapGesture)
+                }
+            }
+        } completion: { _ in
+            // Animation completed
         }
     }
     
@@ -494,33 +530,180 @@ class CameraPreviewViewController: UIViewController {
         
         switch gesture.state {
         case .changed:
-            // Only allow downward dragging
             if translation.y >= 0 {
                 sheet.frame.origin.y = view.bounds.height - sheet.bounds.height + translation.y
+                
+                // Fade background based on sheet position
+                if let backgroundView = view.viewWithTag(999) {
+                    let progress = 1 - (translation.y / sheet.bounds.height)
+                    backgroundView.alpha = max(0.5 * progress, 0)
+                }
             }
             
         case .ended:
             let sheetHeight = sheet.bounds.height
             let currentPosition = sheet.frame.origin.y
-            let dismissThreshold = view.bounds.height - (sheetHeight * 0.7)
+            let dismissThreshold = view.bounds.height - (sheetHeight * 0.85)
             
-            // Dismiss if dragged past threshold or flicked down with sufficient velocity
             if currentPosition > dismissThreshold || velocity.y > 500 {
-                UIView.animate(withDuration: 0.2, animations: {
-                    sheet.frame.origin.y = self.view.bounds.height
-                }) { _ in
-                    self.closeResultSheet()
-                }
+                dismissSheet()
             } else {
-                // Return to original position
                 UIView.animate(withDuration: 0.2) {
                     sheet.frame.origin.y = self.view.bounds.height - sheetHeight
+                    if let backgroundView = self.view.viewWithTag(999) {
+                        backgroundView.alpha = 0.5
+                    }
                 }
             }
             
         default:
             break
         }
+    }
+    
+    @objc private func handleLanguageToggle(_ sender: UISegmentedControl) {
+        guard let scrollView = self.scrollView else { return }
+        
+        UIView.transition(with: scrollView, duration: 0.3, options: .transitionCrossDissolve) {
+            if sender.selectedSegmentIndex == 0 {
+                self.recognizedTextLabel?.isHidden = false
+                self.translatedTextLabel?.isHidden = true
+            } else {
+                self.recognizedTextLabel?.isHidden = true
+                self.translatedTextLabel?.isHidden = false
+            }
+        }
+    }
+    
+    @objc private func selectSourceLanguage() {
+        // Show language picker for source language
+        showLanguagePicker(isSource: true)
+    }
+    
+    @objc private func selectTargetLanguage() {
+        // Show language picker for target language
+        showLanguagePicker(isSource: false)
+    }
+    
+    private func showLanguagePicker(isSource: Bool) {
+        let picker = UIPickerView()
+        picker.dataSource = self
+        picker.delegate = self
+        
+        // Create a reference type to track selection
+        let selection = Selection()
+        
+        let alert = UIAlertController(title: "\(isSource ? "Source" : "Target") Language",
+                                    message: "\n\n\n\n\n\n",
+                                    preferredStyle: .actionSheet)
+        
+        alert.view.addSubview(picker)
+        picker.frame = CGRect(x: 0, y: 50, width: alert.view.frame.width, height: 140)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Select", style: .default) { [weak self] _ in
+            // Get selected language based on picker selection
+            let selectedLanguage = self?.pickerView(picker, titleForRow: selection.selectedRow, forComponent: 0) ?? ""
+            
+            if isSource {
+                self?.sourceLanguage = selectedLanguage
+            } else {
+                self?.targetLanguage = selectedLanguage
+            }
+            self?.languageToggle?.setTitle(selectedLanguage, forSegmentAt: isSource ? 0 : 1)
+        })
+        
+        // Update picker delegate to use our selection object
+        picker.delegate = PickerDelegate(selection: selection, languages: languages)
+        
+        present(alert, animated: true)
+    }
+    
+    private func dismissSheet() {
+        // Find and animate background view
+        if let backgroundView = view.viewWithTag(999) {
+            UIView.animate(withDuration: 0.3) {
+                self.resultSheet?.frame.origin.y = self.view.bounds.height
+                backgroundView.alpha = 0
+            } completion: { _ in
+                self.resultSheet?.removeFromSuperview()
+                backgroundView.removeFromSuperview()
+                self.resultSheet = nil
+                self.recognizedTextLabel = nil
+                self.languageToggle = nil
+                self.scrollView = nil
+            }
+        }
+    }
+    
+    // First, add this helper method to standardize layout calculations
+    private func layoutBottomSheet(_ sheet: UIView) {
+        // Standard measurements
+        let topPadding: CGFloat = 20
+        let globeButtonSize: CGFloat = 32
+        let horizontalPadding: CGFloat = 20
+        let toggleHeight: CGFloat = 32
+        
+        // Update sheet frame
+        sheet.frame = CGRect(x: 0,
+                            y: view.bounds.height - (view.bounds.height * (3.0/4.0)),
+                            width: view.bounds.width,
+                            height: view.bounds.height * (3.0/4.0))
+        
+        // Language UI positioning
+        let languageUITop = topPadding
+        
+        // Source language button
+        if let sourceButton = sheet.subviews.first(where: { $0.tag == 1 }) {
+            sourceButton.frame = CGRect(x: horizontalPadding + 10,
+                                      y: languageUITop,
+                                      width: globeButtonSize,
+                                      height: globeButtonSize)
+        }
+        
+        // Target language button
+        if let targetButton = sheet.subviews.first(where: { $0.tag == 2 }) {
+            targetButton.frame = CGRect(x: sheet.bounds.width - horizontalPadding - 10 - globeButtonSize,
+                                      y: languageUITop,
+                                      width: globeButtonSize,
+                                      height: globeButtonSize)
+        }
+        
+        // Language toggle
+        if let toggle = languageToggle {
+            let toggleWidth = sheet.bounds.width - (horizontalPadding * 2 + globeButtonSize * 2 + 30)
+            toggle.frame = CGRect(x: horizontalPadding + globeButtonSize + 15,
+                                y: languageUITop,
+                                width: toggleWidth,
+                                height: toggleHeight)
+        }
+        
+        // Scroll view
+        if let scrollView = self.scrollView {
+            scrollView.frame = CGRect(x: 0,
+                                    y: languageUITop + globeButtonSize + 15,
+                                    width: sheet.bounds.width,
+                                    height: sheet.bounds.height - (languageUITop + globeButtonSize + 15))
+            
+            // Update text label frame
+            if let textLabel = self.recognizedTextLabel {
+                textLabel.frame = CGRect(x: horizontalPadding,
+                                       y: 0,
+                                       width: scrollView.bounds.width - (horizontalPadding * 2),
+                                       height: textLabel.frame.height)
+                textLabel.sizeToFit()
+                
+                scrollView.contentSize = CGSize(
+                    width: scrollView.bounds.width,
+                    height: textLabel.frame.height + 20
+                )
+            }
+        }
+    }
+    
+    // Add new method to handle background tap
+    @objc private func handleBackgroundTap() {
+        dismissSheet()
     }
 }
 
@@ -616,5 +799,63 @@ extension CameraPreviewViewController: TOCropViewControllerDelegate {
     
     func cropViewController(_ cropViewController: TOCropViewController, didFinishCancelled cancelled: Bool) {
         cropViewController.dismiss(animated: true)
+    }
+}
+
+// Add picker delegate methods
+extension CameraPreviewViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+    private var languages: [(code: String, name: String)] {
+        return [
+            ("en", "English"),
+            ("es", "Spanish"),
+            ("fr", "French"),
+            ("de", "German"),
+            ("it", "Italian"),
+            ("pt", "Portuguese"),
+            ("ru", "Russian"),
+            ("ja", "Japanese"),
+            ("ko", "Korean"),
+            ("zh", "Chinese")
+        ]
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return languages.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return languages[row].name
+    }
+}
+
+// Update the PickerDelegate class
+private class PickerDelegate: NSObject, UIPickerViewDelegate, UIPickerViewDataSource {
+    private let selection: Selection
+    private let languages: [(code: String, name: String)]
+    
+    init(selection: Selection, languages: [(code: String, name: String)]) {
+        self.selection = selection
+        self.languages = languages
+        super.init()
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        selection.selectedRow = row
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return languages[row].name
+    }
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return languages.count
     }
 } 

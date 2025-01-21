@@ -103,4 +103,4 @@ func formatRecognizedText(_ blocks: [RecognizedTextBlock]) -> String {
     }
     
     return formattedText
-} 
+}
